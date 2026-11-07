@@ -14,6 +14,7 @@ export const appCardStyle: React.CSSProperties = {
   background: APP_SHELL.cardBg,
   border: `1px solid ${APP_SHELL.cardBorder}`,
   borderRadius: APP_SHELL.cardRadius,
+  boxShadow: "3px 3px 0 #11110f",
 };
 
 export const appInputStyle: React.CSSProperties = {
@@ -27,7 +28,7 @@ export const appInputStyle: React.CSSProperties = {
   outline: "none",
   boxSizing: "border-box",
   fontFamily: "inherit",
-  colorScheme: "dark",
+  colorScheme: "light",
 };
 
 export const appLabelStyle: React.CSSProperties = {

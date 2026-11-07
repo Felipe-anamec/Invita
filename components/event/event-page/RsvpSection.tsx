@@ -95,7 +95,9 @@ export function RsvpSection({
   const unansweredWindowOpen = !eventStarted && !deadlinePassed;
   const responseWindowOpen = !eventStarted && (!deadlinePassed || event.allowEditAfterDeadline);
   const shouldFloat =
-    !isHost && ((!rsvpDone && unansweredWindowOpen) || (rsvpDone && responseWindowOpen));
+    !isHost &&
+    ((!rsvpDone && unansweredWindowOpen) || (rsvpDone && responseWindowOpen)) &&
+    (typeof window === "undefined" || window.innerWidth < 1024);
   const canEdit = rsvpDone && !!guestEditToken && responseWindowOpen;
 
   useEffect(() => {

@@ -108,18 +108,24 @@ export async function addComment(rawInput: unknown, captchaToken?: string | null
     parentId = parent.id;
   }
 
+  if (!data.body?.trim() && !data.photoUrl && !data.gifUrl) {
+    return { success: false, error: await eventActionMessage("commentRsvpRequired") };
+  }
+
   const comment = await db.comment.create({
     data: {
       eventId: data.eventId,
       guestName,
-      body: data.body,
+      body: data.body || "",
+      photoUrl: data.photoUrl || null,
+      gifUrl: data.gifUrl || null,
       rsvpId,
       parentId,
     },
   });
 
   // Log comment activity
-  const bodyPreview = data.body.slice(0, 30) + (data.body.length > 30 ? "..." : "");
+  const bodyPreview = (data.body || (data.photoUrl ? "[Foto]" : "[GIF]")).slice(0, 30);
   await logActivity(
     data.eventId,
     "comment_new",

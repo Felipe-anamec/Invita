@@ -42,6 +42,8 @@ import { PendingApprovalsCard, ApprovalMessageModal } from "./event-page/Pending
 import { PollsSection } from "./event-page/PollsSection";
 import { PotluckSection } from "./event-page/PotluckSection";
 import { RsvpSection } from "./event-page/RsvpSection";
+import { EventPhotosBlock } from "./event-page/EventPhotosBlock";
+import { FeeCard } from "./event-page/FeeCard";
 import { ShareQrModal } from "./event-page/ShareQrModal";
 import { useCaptcha } from "@/components/ui/CaptchaProvider";
 import { CAPTCHA_RESPONSE_FIELD } from "@/lib/captcha-types";
@@ -837,158 +839,188 @@ export function EventPage({
           coverUploadEnabled={coverUploadEnabled}
         />
 
-        <InfoSectionsBlock
-          event={event}
-          t={t}
-          S={S}
-          isHost={isHost}
-          pendingDelete={pendingDelete}
-          addingSection={addingSection}
-          setAddingSection={setAddingSection}
-          sectionDraft={sectionDraft}
-          setSectionDraft={setSectionDraft}
-          editingSection={editingSection}
-          setEditingSection={setEditingSection}
-          editDraft={editDraft}
-          setEditDraft={setEditDraft}
-          getChipStyle={getChipStyle}
-          commitInfoSection={commitInfoSection}
-          deleteSection={deleteSection}
-          undoDeleteSection={undoDeleteSection}
-          startEditSection={startEditSection}
-          commitEditSection={commitEditSection}
-          moveSection={moveSection}
-        />
+        {/* ── Desktop-First Asymmetric 2-Column Grid ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-8">
+          {/* Main Column (Left, 8 cols out of 12) */}
+          <div className="lg:col-span-8 flex flex-col gap-6">
+            <InfoSectionsBlock
+              event={event}
+              t={t}
+              S={S}
+              isHost={isHost}
+              pendingDelete={pendingDelete}
+              addingSection={addingSection}
+              setAddingSection={setAddingSection}
+              sectionDraft={sectionDraft}
+              setSectionDraft={setSectionDraft}
+              editingSection={editingSection}
+              setEditingSection={setEditingSection}
+              editDraft={editDraft}
+              setEditDraft={setEditDraft}
+              getChipStyle={getChipStyle}
+              commitInfoSection={commitInfoSection}
+              deleteSection={deleteSection}
+              undoDeleteSection={undoDeleteSection}
+              startEditSection={startEditSection}
+              commitEditSection={commitEditSection}
+              moveSection={moveSection}
+            />
 
-        <RsvpSection
-          event={event}
-          t={t}
-          isHost={isHost}
-          guestEditToken={guestEditToken}
-          rsvpStatus={rsvpStatus}
-          rsvpDone={rsvpDone}
-          rsvpApproved={guestRsvp?.approved ?? true}
-        />
+            <EventPhotosBlock
+              event={event}
+              isHost={isHost}
+              isApprovedGuest={isApprovedGuest}
+              guestEditToken={guestEditToken}
+              guestRsvpId={guestRsvpId}
+              theme={t}
+            />
 
-        <PendingApprovalsCard
-          event={event}
-          renderAvatar={renderAvatar}
-          isPending={isPending}
-          t={t}
-          isHost={isHost}
-          setActiveApproval={setActiveApproval}
-        />
+            <PollsSection
+              event={event}
+              isPending={isPending}
+              t={t}
+              S={S}
+              isHost={isHost}
+              rsvpStatus={rsvpStatus}
+              rsvpDone={rsvpDone}
+              guestName={guestName}
+              isPendingGuest={isPendingGuest}
+              newPollOptionTexts={newPollOptionTexts}
+              setNewPollOptionTexts={setNewPollOptionTexts}
+              pendingNoticeStyle={pendingNoticeStyle}
+              handleVote={handleVote}
+              handleAddPollOption={handleAddPollOption}
+            />
 
-        <GuestSharingCard
-          event={event}
-          t={t}
-          isHost={isHost}
-          eventLinkCopied={eventLinkCopied}
-          setEventLinkCopied={setEventLinkCopied}
-          setShowShareQr={setShowShareQr}
-        />
+            <PotluckSection
+              event={event}
+              t={t}
+              S={S}
+              isHost={isHost}
+              rsvpStatus={rsvpStatus}
+              guestName={guestName}
+              isPendingGuest={isPendingGuest}
+              pendingNoticeStyle={pendingNoticeStyle}
+              claimingItemId={claimingItemId}
+              setClaimingItemId={setClaimingItemId}
+              claimName={claimName}
+              setClaimName={setClaimName}
+              claimQty={claimQty}
+              setClaimQty={setClaimQty}
+              claimItem={claimItem}
+              unclaimItem={unclaimItem}
+            />
 
-        {/* ── Guest Invite Friend Block (for private events when guestsCanInvite is enabled) ── */}
-        {!isHost &&
-          event.visibility === "PRIVATE" &&
-          event.guestsCanInvite &&
-          rsvpDone &&
-          (rsvpStatus === "GOING" || rsvpStatus === "MAYBE") && (
-            <GuestInviteFriendCard eventId={event.id} guestToken={guestEditToken ?? ""} theme={t} />
-          )}
+            <GuestListSection
+              event={event}
+              renderAvatar={renderAvatar}
+              t={t}
+              isHost={isHost}
+              going={going}
+              maybe={maybe}
+              no={no}
+              totalGoing={totalGoing}
+            />
 
-        <PollsSection
-          event={event}
-          isPending={isPending}
-          t={t}
-          S={S}
-          isHost={isHost}
-          rsvpStatus={rsvpStatus}
-          rsvpDone={rsvpDone}
-          guestName={guestName}
-          isPendingGuest={isPendingGuest}
-          newPollOptionTexts={newPollOptionTexts}
-          setNewPollOptionTexts={setNewPollOptionTexts}
-          pendingNoticeStyle={pendingNoticeStyle}
-          handleVote={handleVote}
-          handleAddPollOption={handleAddPollOption}
-        />
+            <ActivityFeed
+              event={event}
+              renderAvatar={renderAvatar}
+              isPending={isPending}
+              t={t}
+              S={S}
+              isHost={isHost}
+              isPendingGuest={isPendingGuest}
+              isApprovedGuest={isApprovedGuest}
+              isAdminBypass={isAdminBypass}
+              canViewerComment={canViewerComment}
+              selfAuthorName={selfAuthorName}
+              pendingNoticeStyle={pendingNoticeStyle}
+              guestRsvpId={guestRsvpId}
+              commentText={commentText}
+              setCommentText={setCommentText}
+              replyingToId={replyingToId}
+              setReplyingToId={setReplyingToId}
+              replyText={replyText}
+              setReplyText={setReplyText}
+              feedPage={feedPage}
+              setFeedPage={setFeedPage}
+              updateDraft={updateDraft}
+              setUpdateDraft={setUpdateDraft}
+              notifyOnUpdate={notifyOnUpdate}
+              setNotifyOnUpdate={setNotifyOnUpdate}
+              isPostingUpdate={isPostingUpdate}
+              notificationFeedback={notificationFeedback}
+              submitComment={submitComment}
+              submitReply={submitReply}
+              postUpdate={postUpdate}
+              removeUpdate={removeUpdate}
+              removeActivityEvent={removeActivityEvent}
+            />
+          </div>
 
-        <PotluckSection
-          event={event}
-          t={t}
-          S={S}
-          isHost={isHost}
-          rsvpStatus={rsvpStatus}
-          guestName={guestName}
-          isPendingGuest={isPendingGuest}
-          pendingNoticeStyle={pendingNoticeStyle}
-          claimingItemId={claimingItemId}
-          setClaimingItemId={setClaimingItemId}
-          claimName={claimName}
-          setClaimName={setClaimName}
-          claimQty={claimQty}
-          setClaimQty={setClaimQty}
-          claimItem={claimItem}
-          unclaimItem={unclaimItem}
-        />
+          {/* Sticky Sidebar Rail (Right, 4 cols out of 12) */}
+          <div className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24">
+            <RsvpSection
+              event={event}
+              t={t}
+              isHost={isHost}
+              guestEditToken={guestEditToken}
+              rsvpStatus={rsvpStatus}
+              rsvpDone={rsvpDone}
+              rsvpApproved={guestRsvp?.approved ?? true}
+            />
 
-        <GuestListSection
-          event={event}
-          renderAvatar={renderAvatar}
-          t={t}
-          isHost={isHost}
-          going={going}
-          maybe={maybe}
-          no={no}
-          totalGoing={totalGoing}
-        />
+            <FeeCard
+              feeDescription={event.feeDescription}
+              isHost={isHost}
+              theme={t}
+              onSave={(val) => save("feeDescription", val)}
+            />
 
-        <ActivityFeed
-          event={event}
-          renderAvatar={renderAvatar}
-          isPending={isPending}
-          t={t}
-          S={S}
-          isHost={isHost}
-          isPendingGuest={isPendingGuest}
-          isApprovedGuest={isApprovedGuest}
-          isAdminBypass={isAdminBypass}
-          canViewerComment={canViewerComment}
-          selfAuthorName={selfAuthorName}
-          pendingNoticeStyle={pendingNoticeStyle}
-          guestRsvpId={guestRsvpId}
-          commentText={commentText}
-          setCommentText={setCommentText}
-          replyingToId={replyingToId}
-          setReplyingToId={setReplyingToId}
-          replyText={replyText}
-          setReplyText={setReplyText}
-          feedPage={feedPage}
-          setFeedPage={setFeedPage}
-          updateDraft={updateDraft}
-          setUpdateDraft={setUpdateDraft}
-          notifyOnUpdate={notifyOnUpdate}
-          setNotifyOnUpdate={setNotifyOnUpdate}
-          isPostingUpdate={isPostingUpdate}
-          notificationFeedback={notificationFeedback}
-          submitComment={submitComment}
-          submitReply={submitReply}
-          postUpdate={postUpdate}
-          removeUpdate={removeUpdate}
-          removeActivityEvent={removeActivityEvent}
-        />
+            <PendingApprovalsCard
+              event={event}
+              renderAvatar={renderAvatar}
+              isPending={isPending}
+              t={t}
+              isHost={isHost}
+              setActiveApproval={setActiveApproval}
+            />
+
+            <GuestSharingCard
+              event={event}
+              t={t}
+              isHost={isHost}
+              eventLinkCopied={eventLinkCopied}
+              setEventLinkCopied={setEventLinkCopied}
+              setShowShareQr={setShowShareQr}
+            />
+
+            {/* Guest Invite Friend Block (for private events when guestsCanInvite is enabled) */}
+            {!isHost &&
+              event.visibility === "PRIVATE" &&
+              event.guestsCanInvite &&
+              rsvpDone &&
+              (rsvpStatus === "GOING" || rsvpStatus === "MAYBE") && (
+                <GuestInviteFriendCard
+                  eventId={event.id}
+                  guestToken={guestEditToken ?? ""}
+                  theme={t}
+                />
+              )}
+          </div>
+        </div>
 
         <p
           style={{
             textAlign: "center",
-            marginTop: "32px",
+            marginTop: "64px",
             fontSize: "12px",
             color: t.textMuted,
-            opacity: 0.5,
+            opacity: 0.6,
           }}
+          className="font-mono uppercase tracking-wider"
         >
-          rsvp to me
+          Invita &bull; Encuentros y Celebraciones
         </p>
       </div>
 

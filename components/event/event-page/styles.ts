@@ -6,8 +6,8 @@ export function buildStyles(t: ResolvedTheme) {
   return {
     page: {
       minHeight: "100vh",
-      background: t.pageBg,
-      color: t.textPrimary,
+      background: "var(--ground)",
+      color: "var(--ink)",
       position: "relative" as const,
       overflowX: "hidden" as const,
       fontFamily: "inherit",
@@ -15,9 +15,10 @@ export function buildStyles(t: ResolvedTheme) {
     container: {
       position: "relative" as const,
       zIndex: 1,
-      maxWidth: "600px",
+      width: "100%",
+      maxWidth: "1440px",
       margin: "0 auto",
-      padding: "96px 16px 160px",
+      padding: "48px 20px 140px",
     },
     inp: {
       width: "100%",

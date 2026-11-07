@@ -14,24 +14,24 @@ export type BaseTheme = "DARK" | "SOFT" | "BOLD";
 
 // Single source of truth for the app shell (non-event pages: dashboard, auth, home)
 export const APP_SHELL = {
-  pageBg: "linear-gradient(135deg, #0a0a0f 0%, #13091f 40%, #0d1117 100%)",
-  accent: "#a855f7",
-  accentSecondary: "#ec4899",
-  textPrimary: "#ffffff",
-  textSecondary: "rgba(255,255,255,0.5)",
-  textMuted: "rgba(255,255,255,0.4)",
-  textTertiary: "rgba(255,255,255,0.3)",
-  navBorder: "rgba(255,255,255,0.08)",
-  cardBg: "rgba(255,255,255,0.04)",
-  cardBg2: "rgba(255,255,255,0.06)",
-  cardBorder: "rgba(255,255,255,0.08)",
-  cardRadius: "20px",
-  itemRadius: "16px",
-  authCardRadius: "24px",
-  inputBg: "rgba(255,255,255,0.06)",
-  inputBorder: "rgba(255,255,255,0.1)",
-  inputRadius: "12px",
-  btnRadius: "14px",
+  pageBg: "#e9e9e5",
+  accent: "#ff4b17",
+  accentSecondary: "#11110f",
+  textPrimary: "#11110f",
+  textSecondary: "#4a4a45",
+  textMuted: "#6b6b66",
+  textTertiary: "#8c8c85",
+  navBorder: "rgba(17, 17, 15, 0.15)",
+  cardBg: "#f7f7f3",
+  cardBg2: "#ffffff",
+  cardBorder: "rgba(17, 17, 15, 0.2)",
+  cardRadius: "4px",
+  itemRadius: "4px",
+  authCardRadius: "6px",
+  inputBg: "#ffffff",
+  inputBorder: "#11110f",
+  inputRadius: "4px",
+  btnRadius: "4px",
 } as const;
 
 export const BASE_THEMES: {
@@ -500,7 +500,7 @@ export interface ResolvedTheme {
 
   // Page background
   pageBg: string;
-  pageDecoration: "dark-orbs" | "soft-blobs" | "bold-hero";
+  pageDecoration: "dark-orbs" | "soft-blobs" | "bold-hero" | "none";
   pageDecorationBg1: string;
   pageDecorationBg2: string;
 
@@ -853,10 +853,53 @@ export function resolveTheme(
   const key = [base, gradientFrom, gradientTo, accentColor, cardOpacity, fontId].join("|");
   const cached = resolvedCache.get(key);
   if (cached) return cached;
-  const theme = readableText(
+  const raw = readableText(
     resolveBaseLook(base, gradientFrom, gradientTo, accentColor, cardOpacity, fontId),
     base
   );
+
+  // ── Invita light-shell overrides ────────────────────────────────────────────
+  // The event body now renders on var(--ground)/#e9e9e5. We replace Joe's dark-
+  // purple structural tokens (cardBg, textPrimary, borders, inputs…) with Invita
+  // values so every child component (ActivityFeed, GuestList, etc.) that reads
+  // `t.textMuted` / `t.cardBg` etc. gets readable light-theme values.
+  // Accent, hero text, and gradientFrom/To are preserved — they're still used by
+  // EventHero for the cover section.
+  const theme: ResolvedTheme = {
+    ...raw,
+    // Page/background tokens are now handled by CSS vars in styles.ts; set them
+    // to transparent so any stray inline `style={{ background: t.pageBg }}` is harmless.
+    pageBg: "var(--ground)",
+    pageDecoration: "none" as ResolvedTheme["pageDecoration"],
+    // Card styling — matches EventCard.tsx hard-shadow treatment
+    cardBg: "var(--paper)",
+    cardBgAlpha: 1,
+    cardBorder: "var(--ink)",
+    cardRadius: "0px",
+    cardShadow: "3px 3px 0 var(--ink)",
+    // Text
+    textPrimary: "#11110f",
+    textSecondary: "#4a4a45",
+    textMuted: "#6b6b66",
+    // Inputs
+    inputBg: "#ffffff",
+    inputBorder: "#11110f",
+    inputText: "#11110f",
+    inputPlaceholder: "#6b6b66",
+    // Pills / chips
+    pillBg: "#f7f7f3",
+    pillBorder: "rgba(17,17,15,0.2)",
+    // Badge
+    badgeBg: "rgba(255,75,23,0.12)",
+    badgeText: "#ff4b17",
+    // Buttons
+    btnRadius: "0px",
+    btnFontWeight: "700",
+    btnTransform: "uppercase",
+    // Heading font: keep custom font if set, otherwise Invita display font
+    headingFont: raw.headingFont !== "inherit" ? raw.headingFont : "var(--font-display)",
+  };
+
   if (resolvedCache.size >= RESOLVED_CACHE_LIMIT) resolvedCache.clear();
   resolvedCache.set(key, theme);
   return theme;

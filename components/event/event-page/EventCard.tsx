@@ -22,13 +22,13 @@ export function EventCard<T extends ElementType = "section">({
     <Component
       {...props}
       style={{
-        background: t.cardBg,
-        border: `1px solid ${t.cardBorder}`,
-        borderRadius: t.cardRadius,
+        background: "var(--paper)",
+        border: "2px solid var(--ink)",
+        borderRadius: "0px",
         padding: flush ? 0 : "24px",
         marginBottom: "16px",
-        backdropFilter: "blur(12px)",
-        boxShadow: t.cardShadow,
+        backdropFilter: "none",
+        boxShadow: "3px 3px 0 var(--ink)",
         ...(flush ? { overflow: "hidden" } : {}),
         ...style,
       }}

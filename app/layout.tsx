@@ -6,25 +6,32 @@ import { getSessionUser } from "@/lib/session-user";
 import GlobalHeader from "@/components/ui/GlobalHeader";
 import type { Metadata } from "next";
 import { connection } from "next/server";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Instrument_Sans, Geist_Mono } from "next/font/google";
 import { themeFontVariables } from "./fonts";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const bricolageGrotesque = Bricolage_Grotesque({
+  variable: "--font-display",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const instrumentSans = Instrument_Sans({
+  variable: "--font-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+  variable: "--font-mono",
   subsets: ["latin"],
 });
 
 const baseMetadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   title: {
-    default: "RSVP to Me",
-    template: "%s | RSVP to Me",
+    default: "Invita",
+    template: "%s | Invita",
   },
   manifest: "/site.webmanifest",
   icons: {
@@ -36,7 +43,7 @@ const baseMetadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    siteName: "RSVP to Me",
+    siteName: "Invita",
   },
 };
 
@@ -59,12 +66,12 @@ export default async function RootLayout({
     <html
       lang={locale}
       dir={locales[locale].dir}
-      className={`${geistSans.variable} ${geistMono.variable} ${themeFontVariables} h-full antialiased`}
+      className={`${bricolageGrotesque.variable} ${instrumentSans.variable} ${geistMono.variable} ${themeFontVariables} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-ground text-ink font-sans selection:bg-signal selection:text-white">
         <NextIntlClientProvider locale={locale} messages={{ Ui: messages.Ui }}>
           <GlobalHeader user={user} />
-          {children}
+          <div className="flex-1 w-full">{children}</div>
         </NextIntlClientProvider>
       </body>
     </html>

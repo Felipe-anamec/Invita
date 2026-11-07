@@ -1,33 +1,23 @@
 "use client";
-import { useTranslations } from "next-intl";
 
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { sendMagicLinkAction } from "@/app/actions/auth";
-import { AppShell } from "@/components/ui/AppShell";
-import { APP_SHELL } from "@/lib/theme";
-import {
-  AppButton,
-  AppCard,
-  AppInput,
-  FormField,
-  InlineAlert,
-} from "@/components/ui/AppPrimitives";
 import { useCaptcha } from "@/components/ui/CaptchaProvider";
-
-function looksLikePhone(s: string): boolean {
-  return /^\+?[\d\s\-().]{7,}$/.test(s.trim()) && s.replace(/\D/g, "").length >= 7;
-}
+import Link from "next/link";
+import { ArrowRight, Mail, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 function TokenError() {
-  const tr = useTranslations("Ui.Auth");
-
   const searchParams = useSearchParams();
   if (searchParams.get("error") !== "invalid-token") return null;
   return (
-    <InlineAlert style={{ marginBottom: "20px" }}>
-      {tr("thatLinkHasExpiredOrAlreadyBeenUsedRequest")}
-    </InlineAlert>
+    <div className="bg-signal/10 border border-signal p-4 mb-6 flex items-start gap-3 text-sm text-ink font-sans">
+      <AlertTriangle className="w-5 h-5 text-signal flex-shrink-0 mt-0.5" />
+      <div>
+        <strong className="block font-bold">Enlace expirado o ya utilizado</strong>
+        <span>Por favor ingresa tu correo para solicitar un nuevo enlace de acceso.</span>
+      </div>
+    </div>
   );
 }
 
@@ -38,8 +28,6 @@ export default function SignInForm({
   openRegistration: boolean;
   redirect?: string;
 }) {
-  const tr = useTranslations("Ui.Auth");
-
   const [identifier, setIdentifier] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [authFailed, setAuthFailed] = useState(false);
@@ -47,13 +35,12 @@ export default function SignInForm({
   const [loading, setLoading] = useState(false);
   const { runWithCaptcha } = useCaptcha();
 
-  const isPhone = looksLikePhone(identifier);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setAuthFailed(false);
     setLoading(true);
+
     let result;
     try {
       result = await runWithCaptcha("signin", (token) =>
@@ -61,162 +48,159 @@ export default function SignInForm({
       );
     } catch (reason) {
       setLoading(false);
-      setError(reason instanceof Error ? reason.message : tr("securityCheckFailed"));
+      setError(reason instanceof Error ? reason.message : "Error en verificación de seguridad");
       return;
     }
+
     setLoading(false);
     if (result.error === "auth_failed") {
       setAuthFailed(true);
     } else if (result.success) {
       setSubmitted(true);
     } else {
-      setError(result.error ?? tr("somethingWentWrong"));
+      setError(result.error ?? "Ocurrió un error inesperado al procesar la solicitud.");
     }
   };
 
   return (
-    <AppShell center>
-      <div style={{ width: "100%", maxWidth: "400px" }}>
-        <div style={{ textAlign: "center", marginBottom: "40px" }}>
-          <div style={{ fontSize: "36px", marginBottom: "12px" }}>🎉</div>
-          <h1
-            style={{
-              color: APP_SHELL.textPrimary,
-              fontSize: "28px",
-              fontWeight: 800,
-              marginBottom: "8px",
-            }}
-          >
-            {tr("rsvp")}
-          </h1>
-          <p style={{ color: APP_SHELL.textSecondary, fontSize: "15px" }}>
-            {tr("signInWithAMagicLink")}
-          </p>
-        </div>
+    <div className="w-full min-h-[calc(100vh-8rem)] flex items-center justify-center py-12 px-4 sm:px-6">
+      <div className="w-full max-w-xl">
+        <div className="card-sheet p-8 sm:p-12 relative overflow-hidden">
+          <div className="flex items-center justify-between border-b border-line pb-4 mb-8">
+            <span className="tech-index">INVITA / ACCESO DIRECTO</span>
+            <span className="text-xs font-mono font-bold text-muted">SIN CONTRASEÑAS</span>
+          </div>
 
-        <AppCard style={{ borderRadius: APP_SHELL.authCardRadius, padding: "32px" }}>
           <Suspense>
             <TokenError />
           </Suspense>
+
           {submitted ? (
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "48px", marginBottom: "16px" }}>{isPhone ? "📱" : "📬"}</div>
-              <h2
-                style={{
-                  color: APP_SHELL.textPrimary,
-                  fontSize: "20px",
-                  fontWeight: 700,
-                  marginBottom: "8px",
-                }}
-              >
-                {isPhone ? tr("checkYourTexts") : tr("checkYourEmail")}
-              </h2>
-              <p style={{ color: APP_SHELL.textSecondary, fontSize: "14px", lineHeight: 1.6 }}>
-                {tr.rich("weSentAMagicLinkToClickItMessage", {
-                  part0: (chunks) => (
-                    <strong style={{ color: "rgba(255,255,255,0.8)" }}>{chunks}</strong>
-                  ),
-                  value0: identifier,
-                })}
-              </p>
+            <div className="flex flex-col gap-6 py-4">
+              <div className="w-12 h-12 bg-signal/10 border border-signal flex items-center justify-center text-signal">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+
+              <div>
+                <span className="tech-index text-xs">REVISA TU CORREO</span>
+                <h2 className="font-display text-3xl font-bold uppercase text-ink mt-1">
+                  Enlace mágico enviado
+                </h2>
+                <p className="text-muted mt-3 text-sm leading-relaxed">
+                  Hemos enviado un enlace de inicio de sesión a{" "}
+                  <strong className="text-ink font-mono">{identifier}</strong>. Haz clic en el
+                  enlace del correo para ingresar automáticamente.
+                </p>
+              </div>
+
+              <div className="pt-6 border-t border-line flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSubmitted(false);
+                    setIdentifier("");
+                  }}
+                  className="text-xs font-mono font-bold uppercase text-ink hover:text-signal underline cursor-pointer"
+                >
+                  ← Usar otro correo
+                </button>
+                <Link
+                  href="/"
+                  className="text-xs font-mono font-bold uppercase text-muted hover:text-ink"
+                >
+                  Volver al inicio
+                </Link>
+              </div>
             </div>
           ) : authFailed ? (
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "48px", marginBottom: "16px" }}>📭</div>
-              <h2
-                style={{
-                  color: APP_SHELL.textPrimary,
-                  fontSize: "20px",
-                  fontWeight: 700,
-                  marginBottom: "8px",
-                }}
-              >
-                {tr("signInFailed")}
-              </h2>
-              <p
-                style={{
-                  color: APP_SHELL.textSecondary,
-                  fontSize: "14px",
-                  lineHeight: 1.6,
-                  marginBottom: "20px",
-                }}
-              >
-                {tr.rich("weCouldnTCompleteYourRequestIfYourMessage", {
-                  part0: (chunks) => (
-                    <code
-                      style={{
-                        background: "rgba(255,255,255,0.08)",
-                        borderRadius: "4px",
-                        padding: "1px 5px",
-                        fontSize: "12px",
-                        color: "rgba(255,255,255,0.7)",
-                      }}
-                    >
-                      {chunks}
-                    </code>
-                  ),
-                })}
-              </p>
-              <button
-                onClick={() => {
-                  setAuthFailed(false);
-                  setIdentifier("");
-                }}
-                style={{
-                  background: "transparent",
-                  border: `1px solid ${APP_SHELL.inputBorder}`,
-                  borderRadius: APP_SHELL.btnRadius,
-                  color: APP_SHELL.textSecondary,
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  padding: "10px 20px",
-                  fontFamily: "inherit",
-                }}
-              >
-                {tr("tryAgain")}
-              </button>
+            <div className="flex flex-col gap-6 py-4">
+              <div className="w-12 h-12 bg-red-100 border border-red-500 flex items-center justify-center text-red-600">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+
+              <div>
+                <span className="tech-index text-xs text-red-600">ACCESO RESTRINGIDO</span>
+                <h2 className="font-display text-3xl font-bold uppercase text-ink mt-1">
+                  Cuenta no registrada
+                </h2>
+                <p className="text-muted mt-3 text-sm leading-relaxed">
+                  El registro requiere un código de invitación o que la inscripción esté abierta. Si
+                  eres anfitrión, contacta al administrador.
+                </p>
+              </div>
+
+              <div className="pt-6 border-t border-line">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthFailed(false);
+                    setIdentifier("");
+                  }}
+                  className="btn-invita text-xs py-2 px-4"
+                >
+                  Intentar con otra cuenta
+                </button>
+              </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit}>
-              <FormField label={tr("emailOrPhoneNumber")} style={{ marginBottom: "20px" }}>
-                <AppInput
-                  type="text"
-                  required
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder={tr("youExampleComOr15550000000")}
-                  style={{ padding: "12px 14px", fontSize: "15px" }}
-                />
-              </FormField>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+              <div>
+                <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-ink uppercase">
+                  Iniciar Sesión
+                </h1>
+                <p className="text-sm text-muted mt-2">
+                  Ingresa tu correo para recibir un enlace de acceso directo. No necesitas recordar
+                  contraseñas.
+                </p>
+              </div>
 
-              {error && <InlineAlert>{error}</InlineAlert>}
+              {error && (
+                <div className="bg-red-50 border border-red-400 p-3 text-xs text-red-700 font-mono">
+                  {error}
+                </div>
+              )}
 
-              <AppButton
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-mono uppercase font-bold tracking-wider text-ink">
+                  Correo Electrónico
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    placeholder="vecino@comunidad.cl"
+                    className="w-full bg-ground border border-ink text-ink font-sans text-base px-4 py-3 placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-signal rounded-none"
+                  />
+                  <Mail className="w-5 h-5 text-muted absolute right-3 top-3.5 pointer-events-none" />
+                </div>
+              </div>
+
+              <button
                 type="submit"
                 disabled={loading}
-                style={{
-                  width: "100%",
-                  padding: "13px",
-                  fontSize: "15px",
-                }}
+                className="btn-invita btn-signal text-sm py-3.5 px-6 font-mono font-bold uppercase flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                {loading ? tr("sending") : tr("sendMagicLink")}
-              </AppButton>
+                <span>{loading ? "Enviando enlace..." : "Continuar con Enlace Mágico"}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
 
-              <div style={{ textAlign: "center", marginTop: "20px" }}>
-                <a
-                  href="/auth/register"
-                  style={{ color: APP_SHELL.textMuted, fontSize: "13px", textDecoration: "none" }}
-                >
-                  {openRegistration ? tr("noAccount") : tr("newHost")}{" "}
-                  <span style={{ color: APP_SHELL.accent }}>{tr("createOne")}</span>
-                </a>
+              <div className="pt-4 border-t border-line text-center">
+                <span className="text-xs text-muted font-sans">
+                  {openRegistration ? "¿No tienes cuenta? " : "¿Nuevo anfitrión? "}
+                  <Link
+                    href="/auth/register"
+                    className="font-bold text-ink underline hover:text-signal ml-1"
+                  >
+                    Crear cuenta aquí
+                  </Link>
+                </span>
               </div>
             </form>
           )}
-        </AppCard>
+        </div>
       </div>
-    </AppShell>
+    </div>
   );
 }

@@ -32,7 +32,9 @@ export const RegisterHostSchema = z.object({
 export const AddCommentSchema = z.object({
   eventId: z.string().trim().min(1),
   guestName: z.string().trim().min(1).check(maxCodeUnits(100)),
-  body: z.string().trim().min(1).check(maxCodeUnits(5000)), // L-3 length limit
+  body: z.string().trim().check(maxCodeUnits(5000)).default(""), // L-3 length limit
+  photoUrl: z.string().trim().check(maxCodeUnits(2048)).optional().nullable(),
+  gifUrl: z.string().trim().check(maxCodeUnits(2048)).optional().nullable(),
   // SEC-24: unauthenticated guests authorize with their secret per-RSVP
   // editToken (not the public rsvpId). guestName above is advisory only — for
   // token/authenticated authors the stored name is derived server-side.
@@ -51,12 +53,26 @@ export const CreateEventSchema = z.object({
     .string()
     .trim()
     .regex(/^\d{2}:\d{2}$/),
-  timezone: z.string().trim().check(maxCodeUnits(100)).default("America/New_York"),
+  timezone: z.string().trim().check(maxCodeUnits(100)).default("America/Santiago"),
   locationType: z.enum(["PHYSICAL", "VIRTUAL", "TBD"]).default("PHYSICAL"),
   locationName: z.string().trim().check(maxCodeUnits(200)).optional().nullable(),
   locationAddress: z.string().trim().check(maxCodeUnits(500)).optional().nullable(),
+  feeDescription: z.string().trim().check(maxCodeUnits(500)).optional().nullable(),
   virtualUrl: HttpUrlSchema.optional().nullable().or(z.literal("")),
   visibility: z.enum(["PUBLIC", "UNLISTED", "PRIVATE"]).default("UNLISTED"),
+});
+
+export const AddEventPhotoSchema = z.object({
+  eventId: z.string().trim().min(1),
+  url: z.string().trim().min(1).check(maxCodeUnits(2048)),
+  caption: z.string().trim().check(maxCodeUnits(500)).optional().nullable(),
+  isVenuePhoto: z.boolean().default(false),
+  guestEditToken: z.string().trim().optional().nullable(),
+});
+
+export const DeleteEventPhotoSchema = z.object({
+  photoId: z.string().trim().min(1),
+  guestEditToken: z.string().trim().optional().nullable(),
 });
 
 export const AddRsvpSchema = z.object({

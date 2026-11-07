@@ -271,7 +271,7 @@ export function DashboardClient({
     showNewEventCard && (activeFilter === "upcoming" || activeFilter === "hosting");
 
   return (
-    <div style={{ maxWidth: "1150px", margin: "0 auto", padding: "40px 24px 100px" }}>
+    <div className="shell py-10 md:py-16">
       <style>{`
         @media (max-width: 640px) {
           .new-event-card { aspect-ratio: auto !important; padding: 20px 16px; }
@@ -279,26 +279,24 @@ export function DashboardClient({
       `}</style>
 
       {/* 1. Header greeting */}
-      <div style={{ marginBottom: "32px" }}>
-        <h1
-          style={{
-            fontSize: "36px",
-            fontWeight: 900,
-            color: "#fff",
-            marginBottom: "8px",
-            letterSpacing: "-0.03em",
-          }}
-        >
+      <div style={{ marginBottom: "36px" }}>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="tech-index text-[var(--signal)]">PANEL-01</span>
+          <span className="text-xs font-mono font-bold tracking-wider uppercase text-[var(--muted)]">
+            Gestión de Encuentros
+          </span>
+        </div>
+        <h1 className="font-display font-black text-3xl md:text-5xl text-[var(--ink)] tracking-tight mb-2">
           {tr("welcome", { name: userName })}
         </h1>
-        <p style={{ color: APP_SHELL.textSecondary, fontSize: "15px", margin: 0 }}>
+        <p className="font-sans text-sm md:text-base text-[var(--muted)] m-0">
           {counts.upcoming === 0 ? (
             <>
               {tr("noUpcomingEvents")}{" "}
               {showNewEventCard && (
                 <Link
                   href={userRole === "GUEST" ? "/auth/register" : "/dashboard/events/new"}
-                  style={{ color: APP_SHELL.accent, fontWeight: 800, textDecoration: "none" }}
+                  className="text-[var(--signal)] font-bold hover:underline"
                 >
                   {tr("hostOne")}
                 </Link>
@@ -314,7 +312,7 @@ export function DashboardClient({
       <div
         style={{
           display: "flex",
-          gap: "10px",
+          gap: "8px",
           flexWrap: "wrap",
           alignItems: "center",
           marginBottom: "32px",
@@ -326,22 +324,13 @@ export function DashboardClient({
             setShowSearchInput(!showSearchInput);
             if (showSearchInput) setSearchQuery("");
           }}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "6px",
-            padding: "8px 18px",
-            background: showSearchInput ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.03)",
-            border: showSearchInput ? "1px solid #fff" : "1px solid rgba(255,255,255,0.1)",
-            borderRadius: "99px",
-            color: "#fff",
-            fontSize: "13px",
-            fontWeight: 700,
-            cursor: "pointer",
-            transition: "all 0.15s ease-in-out",
-          }}
+          className={`inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-mono font-bold uppercase tracking-wider border transition-all ${
+            showSearchInput
+              ? "bg-[var(--ink)] text-[var(--ground)] border-[var(--ink)] shadow-[2px_2px_0_var(--signal)]"
+              : "bg-[var(--paper)] text-[var(--ink)] border-[var(--line)] hover:border-[var(--ink)]"
+          }`}
         >
-          <Search size={14} strokeWidth={2.5} />
+          <Search size={13} strokeWidth={2.5} />
           {tr("search")}
         </button>
 
@@ -447,34 +436,15 @@ export function DashboardClient({
                   style={{ textDecoration: "none" }}
                 >
                   <div
-                    className="new-event-card"
-                    style={{
-                      aspectRatio: "4/3",
-                      borderRadius: "16px",
-                      border: "2px dashed rgba(255,255,255,0.15)",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "8px",
-                      color: APP_SHELL.textSecondary,
-                      cursor: "pointer",
-                      transition: "all 0.2s ease-in-out",
-                      background: "rgba(255,255,255,0.01)",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = APP_SHELL.accent;
-                      e.currentTarget.style.color = "#fff";
-                      e.currentTarget.style.background = "rgba(255,255,255,0.03)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-                      e.currentTarget.style.color = APP_SHELL.textSecondary;
-                      e.currentTarget.style.background = "rgba(255,255,255,0.01)";
-                    }}
+                    className="new-event-card border-2 border-dashed border-[var(--ink)] bg-[var(--paper)] flex flex-col items-center justify-center gap-2 p-6 cursor-pointer hard-shadow hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-[var(--ground)] hover:border-[var(--signal)] text-[var(--ink)] transition-all"
+                    style={{ aspectRatio: "16/9" }}
                   >
-                    <Plus size={24} strokeWidth={2.5} />
-                    <span style={{ fontSize: "14px", fontWeight: 800 }}>{tr("newEvent")}</span>
+                    <div className="w-10 h-10 border border-[var(--ink)] bg-[var(--ground)] flex items-center justify-center">
+                      <Plus size={20} strokeWidth={2.5} />
+                    </div>
+                    <span className="font-display font-black text-sm uppercase tracking-wider">
+                      {tr("newEvent")}
+                    </span>
                   </div>
                 </Link>
               )}
@@ -885,28 +855,18 @@ function PillTab({ filter, active, label, count, onClick }: PillTabProps) {
   return (
     <button
       onClick={() => onClick(filter)}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        padding: "8px 18px",
-        background: isActive ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.02)",
-        border: isActive ? "1px solid #fff" : "1px solid rgba(255,255,255,0.08)",
-        borderRadius: "99px",
-        color: isActive ? "#fff" : APP_SHELL.textSecondary,
-        fontSize: "13px",
-        fontWeight: isActive ? 800 : 600,
-        cursor: "pointer",
-        transition: "all 0.15s ease-in-out",
-      }}
-      onMouseEnter={(e) => {
-        if (!isActive) e.currentTarget.style.color = "#fff";
-      }}
-      onMouseLeave={(e) => {
-        if (!isActive) e.currentTarget.style.color = APP_SHELL.textSecondary;
-      }}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider border transition-all ${
+        isActive
+          ? "bg-[var(--ink)] text-[var(--ground)] border-[var(--ink)] shadow-[2px_2px_0_var(--signal)]"
+          : "bg-[var(--paper)] text-[var(--muted)] border-[var(--line)] hover:text-[var(--ink)] hover:border-[var(--ink)]"
+      }`}
     >
-      {label}{" "}
-      <span style={{ marginLeft: "4px", opacity: isActive ? 1 : 0.6, fontSize: "11px" }}>
+      <span>{label}</span>
+      <span
+        className={`px-1.5 py-0.2 rounded-xs text-[10px] font-mono ${
+          isActive ? "bg-[var(--signal)] text-white" : "bg-[var(--ground)] text-[var(--ink)]"
+        }`}
+      >
         {count}
       </span>
     </button>
@@ -966,26 +926,7 @@ function EventCard({
   return (
     <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
       {/* 1. Cover Photo Area */}
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          paddingBottom: "75%", // 4:3 Aspect ratio
-          borderRadius: "16px",
-          overflow: "hidden",
-          background: coverUrl
-            ? "transparent"
-            : `linear-gradient(135deg, #18181b 0%, ${accent}aa 100%)`,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-          transition: "transform 0.2s ease-in-out",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = "scale(1.01)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "scale(1)";
-        }}
-      >
+      <div className="relative w-full aspect-[16/9] border border-[var(--ink)] overflow-hidden hard-shadow hover:-translate-x-0.5 hover:-translate-y-0.5 transition-transform bg-[var(--paper)]">
         {/* Clickable Image Cover Link */}
         <Link
           href={`/e/${item.slug}`}
@@ -1021,8 +962,8 @@ function EventCard({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "48px",
-                opacity: 0.85,
+                fontSize: "42px",
+                background: "var(--ground)",
               }}
             >
               🎉
@@ -1031,71 +972,29 @@ function EventCard({
         </Link>
 
         {/* Date Overlay (Top-Left) */}
-        <div
-          style={{
-            position: "absolute",
-            top: "12px",
-            left: "12px",
-            background: "rgba(255, 255, 255, 0.95)",
-            color: "#000",
-            fontSize: "11px",
-            fontWeight: 800,
-            padding: "5px 10px",
-            borderRadius: "99px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-            letterSpacing: "-0.01em",
-            zIndex: 2,
-            pointerEvents: "none", // click passes through to the Link
-          }}
-        >
+        <div className="absolute top-2.5 left-2.5 bg-[var(--paper)] text-[var(--ink)] border border-[var(--ink)] text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 z-10 pointer-events-none">
           {formatPartifulDate(item.startAt)}
         </div>
 
         {/* Dots Menu Button (Top-Right) */}
-        <div style={{ position: "absolute", top: "12px", right: "12px", zIndex: 3 }}>
+        <div style={{ position: "absolute", top: "10px", right: "10px", zIndex: 10 }}>
           <button
             aria-label={tr("eventMenu", { title: item.title })}
             onClick={(e) => {
               e.preventDefault();
-              e.stopPropagation(); // prevent navigating to event page
+              e.stopPropagation();
               onToggleDropdown(!isDropdownOpen);
             }}
-            style={{
-              width: "28px",
-              height: "28px",
-              borderRadius: "50%",
-              background: "rgba(0,0,0,0.5)",
-              border: "1px solid rgba(255,255,255,0.2)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#fff",
-              cursor: "pointer",
-              backdropFilter: "blur(4px)",
-            }}
+            className="w-7 h-7 bg-[var(--paper)] border border-[var(--ink)] flex items-center justify-center text-[var(--ink)] hover:bg-[var(--line)] cursor-pointer"
           >
-            <MoreHorizontal size={14} strokeWidth={2.5} />
+            <MoreHorizontal size={13} strokeWidth={2.5} />
           </button>
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
             <div
               ref={dropdownRef}
-              style={{
-                position: "absolute",
-                top: "34px",
-                right: 0,
-                background: "#18181b",
-                border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: "10px",
-                padding: "6px",
-                minWidth: "120px",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-                zIndex: 50,
-                display: "flex",
-                flexDirection: "column",
-                gap: "2px",
-              }}
+              className="absolute top-8 right-0 bg-[var(--paper)] border border-[var(--ink)] hard-shadow p-1.5 min-w-[130px] z-50 flex flex-col gap-1"
             >
               {!isInvite ? (
                 <>
@@ -1119,23 +1018,7 @@ function EventCard({
 
         {/* Status Overlay Badge (Bottom-Right) */}
         {overlayText && (
-          <div
-            style={{
-              position: "absolute",
-              bottom: "12px",
-              right: "12px",
-              background: overlayColor,
-              color: "#fff",
-              fontSize: "10px",
-              fontWeight: 900,
-              padding: "4px 10px",
-              borderRadius: "6px",
-              letterSpacing: "0.03em",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-              zIndex: 2,
-              pointerEvents: "none", // click passes through to the Link
-            }}
-          >
+          <div className="absolute bottom-2.5 right-2.5 bg-[var(--ink)] text-[var(--ground)] text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 z-10 pointer-events-none">
             {overlayText}
           </div>
         )}
@@ -1146,19 +1029,7 @@ function EventCard({
         {/* Title */}
         <Link
           href={`/e/${item.slug}`}
-          style={{
-            fontSize: "15px",
-            fontWeight: 800,
-            color: "#fff",
-            textDecoration: "none",
-            display: "-webkit-box",
-            WebkitLineClamp: 1,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            transition: "color 0.15s ease-in-out",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = accent)}
-          onMouseLeave={(e) => (e.currentTarget.style.color = "#fff")}
+          className="font-display font-extrabold text-base text-[var(--ink)] hover:text-[var(--signal)] transition-colors line-clamp-1 block"
         >
           {item.title}
         </Link>

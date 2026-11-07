@@ -55,6 +55,9 @@ const getEventPageData = cache((slug: string) =>
         orderBy: { createdAt: "desc" },
         take: 50,
       },
+      photos: {
+        orderBy: { createdAt: "desc" },
+      },
       activityEvents: {
         orderBy: { createdAt: "desc" },
         take: 100,

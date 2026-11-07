@@ -37,6 +37,7 @@ export type EventData = Partial<GuestRsvpDisplayFields> & {
   visibility: "PUBLIC" | "UNLISTED" | "PRIVATE";
   hostDisplayName: string | null;
   allowEditAfterDeadline: boolean;
+  feeDescription?: string | null;
   host: { id: string; name: string | null; email: string; avatarUrl?: string | null };
   coHosts: {
     id: string;
@@ -68,16 +69,29 @@ export type EventData = Partial<GuestRsvpDisplayFields> & {
     createdAt: Date;
     user?: { avatarUrl: string | null } | null;
   }[];
+  photos?: {
+    id: string;
+    url: string;
+    caption: string | null;
+    uploaderName: string | null;
+    uploaderId: string | null;
+    isVenuePhoto: boolean;
+    createdAt: Date;
+  }[];
   comments: {
     id: string;
     guestName: string;
     body: string;
+    photoUrl?: string | null;
+    gifUrl?: string | null;
     rsvpId?: string | null;
     createdAt: Date;
     replies: {
       id: string;
       guestName: string;
       body: string;
+      photoUrl?: string | null;
+      gifUrl?: string | null;
       rsvpId?: string | null;
       createdAt: Date;
     }[];

@@ -30,6 +30,7 @@ export async function createEvent(formData: FormData) {
     locationType: (formData.get("locationType") as string) || "PHYSICAL",
     locationName: formData.get("locationName") as string | null,
     locationAddress: formData.get("locationAddress") as string | null,
+    feeDescription: formData.get("feeDescription") as string | null,
     virtualUrl: formData.get("virtualUrl") as string | null,
     visibility: (formData.get("visibility") as string) || "UNLISTED",
   };
@@ -51,6 +52,7 @@ export async function createEvent(formData: FormData) {
       locationType: parsed.locationType,
       locationName: parsed.locationName,
       locationAddress: parsed.locationAddress,
+      feeDescription: parsed.feeDescription,
       virtualUrl: parsed.virtualUrl,
       visibility: parsed.visibility,
       hostId: sessionUser.id,

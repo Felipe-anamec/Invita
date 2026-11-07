@@ -1,69 +1,39 @@
 import type { Locale } from "@/i18n/config";
 import LanguageSelector from "./LanguageSelector";
-import { APP_SHELL } from "@/lib/theme";
 import ProfileDropdown, { type DropdownUser } from "@/components/ui/ProfileDropdown";
-
-const navBase: React.CSSProperties = {
-  borderBottom: `1px solid ${APP_SHELL.navBorder}`,
-  padding: "16px 20px",
-  display: "flex",
-  alignItems: "center",
-};
-
-const fixedNavStyle: React.CSSProperties = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  right: 0,
-  zIndex: 200,
-  height: "53px",
-  padding: "0 16px",
-  background: "rgba(15,15,20,0.9)",
-  backdropFilter: "blur(14px)",
-  WebkitBackdropFilter: "blur(14px)",
-  borderBottom: "1px solid rgba(255,255,255,0.08)",
-  color: "#ffffff",
-};
+import Link from "next/link";
 
 export function AppNavLogo({
   href = "/",
   leading,
   trailing,
-  style,
+  className = "",
 }: {
   href?: string;
   leading?: React.ReactNode;
   trailing?: React.ReactNode;
-  style?: React.CSSProperties;
+  className?: string;
 }) {
   return (
-    <nav
-      style={{
-        ...navBase,
-        direction: "ltr",
-        justifyContent: "space-between",
-        gap: "12px",
-        ...style,
-      }}
+    <header
+      className={`w-full border-b border-line bg-ground/90 backdrop-blur-md sticky top-0 z-50 ${className}`}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        {leading}
-        <a
-          href={href}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            textDecoration: "none",
-            color: "inherit",
-          }}
-        >
-          <span style={{ fontSize: "22px" }}>🎉</span>
-          <span style={{ fontSize: "17px", fontWeight: 800 }}>RSVP</span>
-        </a>
+      <div className="shell h-16 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          {leading}
+          <Link
+            href={href}
+            className="flex items-center gap-2 text-ink no-underline group transition-transform active:scale-95"
+          >
+            <span className="w-3 h-3 bg-signal inline-block rounded-none transition-transform group-hover:rotate-45" />
+            <span className="font-display text-2xl font-bold tracking-tight text-ink uppercase">
+              Invita
+            </span>
+          </Link>
+        </div>
+        <div className="flex items-center gap-3">{trailing}</div>
       </div>
-      {trailing}
-    </nav>
+    </header>
   );
 }
 
@@ -71,51 +41,48 @@ export function AppTopNav({
   user,
   onLocaleChange,
   href,
-  variant = "default",
 }: {
   user: DropdownUser | null;
   onLocaleChange?: (locale: Locale) => Promise<void>;
   href?: string;
   variant?: "default" | "fixed" | "event-overlay";
 }) {
-  const variantStyle =
-    variant === "default"
-      ? { background: APP_SHELL.pageBg, color: APP_SHELL.textPrimary }
-      : {
-          ...fixedNavStyle,
-          ...(variant === "event-overlay"
-            ? {
-                height: "52px",
-                background: "rgba(0,0,0,0.45)",
-                borderBottom: "1px solid rgba(255,255,255,0.07)",
-              }
-            : undefined),
-        };
-
   return (
     <AppNavLogo
       href={href ?? (user ? "/dashboard" : "/")}
       trailing={
-        <div style={{ display: "flex", alignItems: "center", gap: 4, height: 36 }}>
+        <div className="flex items-center gap-3">
           <LanguageSelector onLocaleChange={onLocaleChange} />
-          <ProfileDropdown user={user} />
+          {user ? (
+            <ProfileDropdown user={user} />
+          ) : (
+            <Link
+              href="/auth/sign-in"
+              className="btn-invita btn-signal text-xs py-1.5 px-3 min-h-[2.25rem]"
+            >
+              Iniciar sesión
+            </Link>
+          )}
         </div>
       }
-      style={variantStyle}
     />
   );
 }
 
 export function AppNavBack({ href, title }: { href: string; title: string }) {
   return (
-    <nav style={{ ...navBase, gap: "12px" }}>
-      <a
-        href={href}
-        style={{ color: APP_SHELL.textSecondary, textDecoration: "none", fontSize: "22px" }}
-      >
-        ←
-      </a>
-      <h1 style={{ fontSize: "17px", fontWeight: 700 }}>{title}</h1>
-    </nav>
+    <header className="w-full border-b border-line bg-ground/90 backdrop-blur-md sticky top-0 z-50">
+      <div className="shell h-16 flex items-center gap-4">
+        <Link
+          href={href}
+          className="text-ink hover:text-signal text-xl transition-colors no-underline font-bold"
+        >
+          ←
+        </Link>
+        <h1 className="font-display text-lg font-bold tracking-tight text-ink uppercase">
+          {title}
+        </h1>
+      </div>
+    </header>
   );
 }

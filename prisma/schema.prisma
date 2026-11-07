@@ -104,11 +104,12 @@ model Event {
   description     String?
   startAt         DateTime
   endAt           DateTime?
-  timezone        String       @default("America/New_York")
+  timezone        String       @default("America/Santiago")
   locationType    LocationType @default(PHYSICAL)
   locationName    String?
   locationAddress String?
   virtualUrl      String?
+  feeDescription  String?
   capacity        Int?
   visibility      Visibility   @default(UNLISTED)
   hostId          String
@@ -163,6 +164,7 @@ model Event {
   checkIns             CheckIn[]
   activityEvents       ActivityEvent[]
   polls                Poll[]
+  photos               EventPhoto[]
   coHostInvitations    CoHostInvitation[]
   notificationSettings NotificationSettings[]
   notificationSchedule NotificationSchedule[]
@@ -509,12 +511,34 @@ model Comment {
   guestName String
   rsvpId    String?
   body      String
+  photoUrl  String?
+  gifUrl    String?
   parentId  String?
   createdAt DateTime @default(now())
 
   event   Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
   parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
   replies Comment[] @relation("CommentReplies")
+}
+
+// ──────────────────────────────────────────────
+// GALLERY & PHOTOS
+// ──────────────────────────────────────────────
+
+model EventPhoto {
+  id           String   @id @default(cuid())
+  eventId      String
+  url          String
+  caption      String?
+  uploaderName String?
+  uploaderId   String?
+  isVenuePhoto Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
 }
 
 // ──────────────────────────────────────────────

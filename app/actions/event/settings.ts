@@ -30,6 +30,7 @@ const ALLOWED_FIELDS = new Set([
   "locationName",
   "locationAddress",
   "virtualUrl",
+  "feeDescription",
 ]);
 
 export async function saveEventField(
@@ -51,6 +52,7 @@ export async function saveEventField(
     locationName: "event_location",
     locationAddress: "event_location",
     virtualUrl: "event_location",
+    feeDescription: "event_fee",
   };
   const actType = fieldTypes[field] ?? "event_field";
   const detail = (() => {
@@ -58,6 +60,7 @@ export async function saveEventField(
     if (field === "title") return v ? `Title updated to "${v}"` : "Title cleared";
     if (field === "locationName") return v ? `Location updated to "${v}"` : "Location name cleared";
     if (field === "locationAddress") return v ? `Address updated to "${v}"` : "Address cleared";
+    if (field === "feeDescription") return v ? `Cuota actualizada a "${v}"` : "Cuota eliminada";
     if (field === "description") return "Description updated";
     if (field === "virtualUrl") return v ? "Virtual link updated" : "Virtual link cleared";
     return "Event updated";

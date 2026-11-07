@@ -225,89 +225,72 @@ export function HostBar({
 
   return (
     <>
-      {/* Floating bar — hidden while a panel is open */}
-      {!activePanel && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "24px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            background: "rgba(15,15,20,0.85)",
-            backdropFilter: "blur(20px)",
-            border: "1px solid rgba(255,255,255,0.12)",
-            borderRadius: "100px",
-            padding: "8px 16px",
+      {/* ── Host sidebar panel — fixed right edge ── */}
+      <div
+        style={{
+          position: "fixed",
+          right: 0,
+          top: "50%",
+          transform: "translateY(-50%)",
+          background: "var(--paper)",
+          borderLeft: "2px solid var(--ink)",
+          borderTop: "2px solid var(--ink)",
+          borderBottom: "2px solid var(--ink)",
+          borderTopLeftRadius: "0px",
+          borderBottomLeftRadius: "0px",
+          boxShadow: "-3px 3px 0 var(--ink)",
+          zIndex: 100,
+          display: "flex",
+          flexDirection: "column",
+          gap: "0px",
+          overflow: "hidden",
+        }}
+      >
+        {actions.map(({ id, icon: Icon, label, href }, idx) => {
+          const isActive = activePanel === id;
+          const sharedStyle: React.CSSProperties = {
             display: "flex",
-            gap: "4px",
-            zIndex: 100,
-            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-          }}
-        >
-          {actions.map(({ id, icon: Icon, label, href }) =>
-            href ? (
-              <a
-                key={id}
-                href={href}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "3px",
-                  padding: "8px 14px",
-                  borderRadius: "80px",
-                  textDecoration: "none",
-                  color: "rgba(255,255,255,0.7)",
-                  fontSize: "11px",
-                  fontWeight: 600,
-                  background: "transparent",
-                  transition: "background 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "transparent";
-                }}
-              >
-                <Icon size={18} />
-                {label}
-              </a>
-            ) : (
-              <button
-                key={id}
-                onClick={() => setActivePanel(activePanel === id ? null : id)}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "3px",
-                  padding: "8px 14px",
-                  borderRadius: "80px",
-                  border: "none",
-                  cursor: "pointer",
-                  background: activePanel === id ? `rgba(${t.accent},0.2)` : "transparent",
-                  color: activePanel === id ? t.accent : "rgba(255,255,255,0.7)",
-                  fontSize: "11px",
-                  fontWeight: 600,
-                  fontFamily: "inherit",
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background =
-                    activePanel === id ? `rgba(${t.accent},0.2)` : "transparent";
-                }}
-              >
-                <Icon size={18} />
-                {label}
-              </button>
-            )
-          )}
-        </div>
-      )}
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "5px",
+            padding: "14px 18px",
+            borderBottom: idx < actions.length - 1 ? "1px solid var(--line)" : "none",
+            textDecoration: "none",
+            color: isActive ? "var(--signal)" : "var(--ink)",
+            fontSize: "10px",
+            fontWeight: 700,
+            fontFamily: "inherit",
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            background: isActive ? "var(--ground)" : "transparent",
+            cursor: "pointer",
+            border: "none",
+            transition: "background 0.12s, color 0.12s",
+            minWidth: "64px",
+          };
+          return href ? (
+            <a key={id} href={href} style={sharedStyle}>
+              <Icon size={18} strokeWidth={2} />
+              {label}
+            </a>
+          ) : (
+            <button
+              key={id}
+              onClick={() => setActivePanel(activePanel === id ? null : id)}
+              style={sharedStyle}
+              onMouseEnter={(e) => {
+                if (!isActive) (e.currentTarget as HTMLElement).style.background = "var(--ground)";
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) (e.currentTarget as HTMLElement).style.background = "transparent";
+              }}
+            >
+              <Icon size={18} strokeWidth={2} />
+              {label}
+            </button>
+          );
+        })}
+      </div>
 
       {/* Panels */}
       {activePanel === "invite" && (
